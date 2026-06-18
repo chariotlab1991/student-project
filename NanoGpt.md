@@ -1,18 +1,54 @@
-# Running nanoGPT
+# Running nanoGPT 
 
-This document contains the final step-by-step process used to run nanoGPT on a Linux machine.
+This document contains the final step-by-step process to run nanoGPT on a Linux machine.
 
 In this setup:
 
-* The virtual environment was already created.
-* `pip` was already updated to the latest version.
+- nanoGPT repository is already cloned.
+- The machine is running on CPU.
 
 
 ---
 
-## Step 1: Install Required Packages
+## Step 1: Create a Virtual Environment
 
-First, install all required dependencies:
+First, create a Python virtual environment inside the nanoGPT project folder:
+
+```bash
+python3 -m venv .venv
+```
+
+---
+
+## Step 2: Activate the Virtual Environment
+
+Activate the virtual environment:
+
+```bash
+source .venv/bin/activate
+```
+
+After activation, your terminal should show something like this:
+
+```bash
+(.venv) root@your-machine:~/Desktop/workspace/nanoGPT#
+```
+
+---
+
+## Step 3: Upgrade pip
+
+Upgrade `pip` to the latest version:
+
+```bash
+pip install --upgrade pip
+```
+
+---
+
+## Step 4: Install Required Packages
+
+Install all required dependencies:
 
 ```bash
 pip install torch numpy transformers datasets tiktoken wandb tqdm
@@ -20,9 +56,9 @@ pip install torch numpy transformers datasets tiktoken wandb tqdm
 
 ---
 
-## Step 2: Prepare the Shakespeare Dataset
+## Step 5: Prepare the Shakespeare Dataset
 
-Next, prepare the Shakespeare character-level dataset:
+Prepare the Shakespeare character-level dataset:
 
 ```bash
 python data/shakespeare_char/prepare.py
@@ -46,59 +82,17 @@ These files are required before training the model.
 
 ---
 
-## Step 3: Train the nanoGPT Model
+## Step 6: Train the nanoGPT Model
 
-After preparing the dataset, train a small nanoGPT model on CPU:
-
-```bash
-python -u train.py config/train_shakespeare_char.py --device=cpu --compile=False --wandb_log=False --max_iters=100 --eval_interval=20 --log_interval=1 --batch_size=2 --block_size=32 --n_layer=2 --n_head=2 --n_embd=32
-```
-
-### Explanation of Important Flags
+Train a small nanoGPT model on CPU:
 
 ```bash
---device=cpu
+python -u train.py config/train_shakespeare_char.py --device=cpu --compile=False --wandb_log=False --max_iters=500 --eval_interval=20 --log_interval=1 --batch_size=2 --block_size=32 --n_layer=2 --n_head=2 --n_embd=32
 ```
 
-Runs training on CPU instead of GPU.
+This command trains a lightweight GPT-style model on the Shakespeare dataset.
 
-```bash
---compile=False
-```
-
-Disables PyTorch compile mode, which is useful for simple CPU-based training.
-
-```bash
---wandb_log=False
-```
-
-Disables Weights & Biases logging.
-
-```bash
---max_iters=100
-```
-
-Runs training for 100 iterations.
-
-```bash
---batch_size=2
-```
-
-Uses a small batch size suitable for low-RAM machines.
-
-```bash
---block_size=32
-```
-
-Uses a smaller context length to reduce memory usage.
-
-```bash
---n_layer=2 --n_head=2 --n_embd=32
-```
-
-Creates a very small GPT-style model that can run on a lightweight Linux machine.
-
-After training, the model checkpoint is saved in:
+After training is completed, the model checkpoint is saved in:
 
 ```bash
 out-shakespeare-char
@@ -106,7 +100,7 @@ out-shakespeare-char
 
 ---
 
-## Step 4: Test the Trained Model
+## Step 7: Test the Trained Model
 
 After training is complete, test the model using `sample.py`:
 
@@ -114,17 +108,17 @@ After training is complete, test the model using `sample.py`:
 python sample.py --out_dir=out-shakespeare-char --device=cpu --compile=False --start="ROMEO:" --max_new_tokens=200
 ```
 
-This command generates text starting from the prompt:
+This command generates text starting from:
 
 ```text
 ROMEO:
 ```
 
-If this command generates output, the model is working successfully.
+If this command generates output, the trained model is working successfully.
 
 ---
 
-## Step 5: Replace `chat.py`
+## Step 8: Replace `chat.py`
 
 After confirming that `sample.py` works, replace the content of `chat.py` with the following code:
 
@@ -192,9 +186,9 @@ while True:
 
 ---
 
-## Step 6: Run `chat.py`
+## Step 9: Run `chat.py`
 
-Finally, run:
+Run the chatbot-style wrapper:
 
 ```bash
 python chat.py
@@ -259,5 +253,3 @@ or
 ```bash
 --max_iters=1000
 ```
-
-
